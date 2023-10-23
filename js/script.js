@@ -155,3 +155,16 @@ function formatPokemonId(id) {
 
 
 fetchPokemons();
+
+/*const url = `https://pokeapi.co/api/v2/pokemon/1`
+async function test() {
+	const fetchPokemon = await fetch(url);
+  const data = await fetchPokemon.json();
+ 	const fetchPokemonSpecies = await fetch(data.species.url)
+  const dataPokemonSpecies = await fetchPokemonSpecies.json()
+  const fetchEvolutionPokemon = await fetch(dataPokemonSpecies.evolution_chain.url)
+  const dataEvolutionPokemon = await fetchEvolutionPokemon.json();
+  console.log(dataEvolutionPokemon);
+}
+
+test(); */
