@@ -2,16 +2,21 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    --primary-font-family: 'Rubik', Arial, sans-serif;
+    --secondary-font-family: 'Press Start 2P', Arial, Helvetica, sans-serif;
 }
 
 body {
-    font-family: 'Press Start 2P', Arial, Helvetica, sans-serif;
+    font-family: var(--primary-font-family);
 }
 
-h1 {
+h1, h2 {
+    font-family: var(--secondary-font-family);
     text-align: center;
+    text-transform: capitalize;
 }
 
+/* Content pokedex */
 .content-pokedex {
     display: flex;
     justify-content: center;
@@ -20,6 +25,7 @@ h1 {
 }
 
 .card {
+    font-family: var(--secondary-font-family);
     position: relative;
     display: flex;
     justify-content: center;
@@ -72,10 +78,15 @@ h1 {
 }
 
 .card-types {
-    font-family: 'Rubik', Arial, sans-serif;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
     text-transform: uppercase;
     margin: 10px 0 0 0;
+    font-size: 12px;
 }
+
 .card-types span {
     padding: 5px;
     border-radius: 100px;
@@ -83,6 +94,7 @@ h1 {
 
 
 /* Modal pokemon */
+
 .pokemon-sheet {
     position: fixed;
     top: 0;
@@ -111,10 +123,56 @@ h1 {
     color: #fff;
 }
 
-.pokemon-basic-information {
-    display: flex;
+/* Content modal pokemon */
+h2.pokemon-name-fr {
+    font-size: 16px;
 }
 
+.pokemon-basic-information {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 0 10px;
+}
+
+.pokemon-basic-information div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 200%;
+    font-size: 24px;
+}
+
+td.title-table {
+    text-align: end;
+    padding-right: 10px;
+    font-weight: bold;
+}
+
+.pokemon-abilities {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 15px;
+}
+
+.pokemon-types span, .pokemon-abilities span {
+    text-transform: uppercase;
+    padding: 5px;
+    border-radius: 100px;
+}
+
+.pokemon-abilities span {
+    width: fit-content;
+}
+
+/* Evolutions */
+.evolutions-pokemon {
+    display: flex;
+    gap: 10px;
+}
+
+.evolution-right-arrow {
+    width: 12px;
+}
 
 
 
