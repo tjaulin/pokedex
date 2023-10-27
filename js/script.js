@@ -67,54 +67,21 @@ const displaySheetPokemon = async (pokemon) => {
     // console.log(await getEvolutions(dataPokemonEvolutions.chain));
     let evolutions = await getEvolutions(dataPokemonEvolutions.chain);
     evolutions = [
-    {
-        name: dataPokemonEvolutions.chain.species.name,
-        url: dataPokemonEvolutions.chain.species.url,
-        evolves_to: evolutions,
-    }
+        {
+            name: dataPokemonEvolutions.chain.species.name,
+            url: dataPokemonEvolutions.chain.species.url,
+            // evolves_to: evolutions,
+        },
+    ...evolutions
     ];
     console.log(evolutions);
     const evolutionsChainPokemon = document.createElement('div');
     evolutionsChainPokemon.classList.add('evolutions-pokemon');
 
-    let html = '';
+    // evolutions.forEach((evolution) => {
+    // });
 
-    evolutions.forEach((evolution) => {
-        html += '<div class="evolution-pokemon">';
-        html += '<span class="evolution-pokemon-name">' + evolution.name + '</span>';
-        html += '</div>';
-        if (evolution.evolves_to.length > 0) {            
-            html += '<div class="evolution-pokemon">';
-            evolution.evolves_to.forEach((subEvolution) => {
-                if(evolution.evolves_to.length > 1) {
-                    html += '<div class="sub-evolution">'
-                    html += '<img class="evolution-right-arrow" src="./img/right-arrow.png" />';
-                    html += '<span class="evolution-pokemon-name">' + subEvolution.name + '</span>';
-                    html += '</div>'
-                } else {
-                    html += '<img class="evolution-right-arrow" src="./img/right-arrow.png" />';
-                    html += '<span class="evolution-pokemon-name">' + subEvolution.name + '</span>';
-                }
-
-                if(subEvolution.evolves_to.length > 0) {
-                    subEvolution.evolves_to.forEach((subEvolution) => {
-                        if(evolution.evolves_to.length > 1) {
-                            html += '<div class="sub-evolution">'
-                            html += '<img class="evolution-right-arrow" src="./img/right-arrow.png" />';
-                            html += '<span class="evolution-pokemon-name">' + subEvolution.name + '</span>';
-                            html += '</div>'
-                        } else {
-                            html += '<img class="evolution-right-arrow" src="./img/right-arrow.png" />';
-                            html += '<span class="evolution-pokemon-name">' + subEvolution.name + '</span>';
-                        }
-                    })
-                }
-            });
-            html += '</div>';
-        }
-    });
-
-    evolutionsChainPokemon.innerHTML = html;
+    // evolutionsChainPokemon.innerHTML = html;
 
 
     /* -------------------------------------------------- HTML -------------------------------------------------- */
@@ -233,40 +200,40 @@ function formatPokemonId(id) {
 }
 
 async function getEvolutions(dataPokemonEvolutionsChain) {
-    if (!dataPokemonEvolutionsChain.evolves_to || !Array.isArray(dataPokemonEvolutionsChain.evolves_to)) {
-        return [];
-    }
+    // if (!dataPokemonEvolutionsChain.evolves_to || !Array.isArray(dataPokemonEvolutionsChain.evolves_to)) {
+    //     return [];
+    // }
     
-    const subEvolutions = await Promise.all(dataPokemonEvolutionsChain.evolves_to.map(async (evolution) => {
-        const { name, url } = evolution.species;
-        const subEvolutions = await getEvolutions(evolution);
+    // const subEvolutions = await Promise.all(dataPokemonEvolutionsChain.evolves_to.map(async (evolution) => {
+    //     const { name, url } = evolution.species;
+    //     const subEvolutions = await getEvolutions(evolution);
         
-        return {
-            name,
-            url,
-            evolves_to: subEvolutions,
-        };
-    }));
+    //     return {
+    //         name,
+    //         url,
+    //         evolves_to: subEvolutions,
+    //     };
+    // }));
 
-    return subEvolutions;
+    // return subEvolutions;
       
     // const formattedEvolutions = formatEvolutions(dataPokemonEvolutions);
     
     
-    // if (!dataPokemonEvolutionsChain || !dataPokemonEvolutionsChain.evolves_to) return [];
+    if (!dataPokemonEvolutionsChain || !dataPokemonEvolutionsChain.evolves_to) return [];
 
-    // const evs = await Promise.all(dataPokemonEvolutionsChain.evolves_to.map(async evolution => {
-    //     const subEvolutions = await getEvolutions(evolution);
-    //     return [
-    //       {
-    //         name: evolution.species.name,
-    //         url: evolution.species.url
-    //       },
-    //       ...subEvolutions
-    //     ];
-    // }));
+    const evs = await Promise.all(dataPokemonEvolutionsChain.evolves_to.map(async evolution => {
+        const subEvolutions = await getEvolutions(evolution);
+        return [
+          {
+            name: evolution.species.name,
+            url: evolution.species.url
+          },
+          ...subEvolutions
+        ];
+    }));
 
-    // return evs.flat();
+    return evs.flat();
 }
 
 fetchPokemons();
