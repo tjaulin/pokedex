@@ -8,11 +8,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Animate css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body id="body">
+    <!-- CUSTOM LOADER -->
+    <!-- <div class="pokeball">
+        <div class="filler animate__animated animate__bounce animate__infinite"></div>
+    </div> -->
+
     <h1>Pokédex</h1>
+    <!-- <div class="search-pokemon"> -->
+        <div class="div-search-pokemon">
+            <input type="text" onkeyup="searchPokemon()" id="search-pokemon" name="search-pokemon" placeholder="Rechercher un pokemon…" autocomplete="off" aria-label="Rechercher un pokemon parmi le contenu du site">
+        </div>
+    <!-- </div> -->
     <div class="content-pokedex"></div>
 
      <!-- Custom JS -->

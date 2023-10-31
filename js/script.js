@@ -21,6 +21,7 @@ const fetchPokemons = () => {
             id: data.id,
             name: data.name,
             image: data.sprites['other']['home']['front_default'] ?? data.sprites['other']['official-artwork']['front_default'],
+            shiny: data.sprites['other']['home']['front_shiny'] ?? data.sprites['other']['official-artwork']['front_shiny'],
             type: data.types,
             species: data.species.url,
             height: data.height * 10,
@@ -33,6 +34,8 @@ const fetchPokemons = () => {
 }
 
 const displayPokemon = (pokemons) => {
+    //Désaffiche le loader avant l'affichage des pokémons
+    contentPokemon.innerHTML = ``;
     pokemons.forEach((pokemon) => {
         const card = document.createElement('div');
         card.classList.add('card');
@@ -55,9 +58,26 @@ const displayPokemon = (pokemons) => {
     })
 }
 
-const displaySheetPokemon = async (pokemon) => {
+const displaySheetPokemon = async (pokemon, evolution = false) => {
+    body.style.overflow = 'hidden';
+    if(evolution) {
+        const oldPokemonSheet = document.querySelector('.pokemon-sheet');
+        oldPokemonSheet.remove();
+    }
+
+    const pokemonSheet = document.createElement('div');
+    pokemonSheet.style.overflow = 'auto';
+    pokemonSheet.classList.add('pokemon-sheet');
+
+    contentPokemon.append(pokemonSheet);
+    showLoader();
+
     /* -------------------------------------------------- DATA -------------------------------------------------- */
     // Pokemon species
+    console.log('pokemon :');
+    console.log(pokemon);
+    console.log("pokemon species :");
+    console.log(pokemon.species);
     const pokemonSpecies = await fetchJson(pokemon.species);
     console.log(pokemonSpecies);
 
@@ -66,30 +86,20 @@ const displaySheetPokemon = async (pokemon) => {
     console.log(dataPokemonEvolutions.chain);
     // console.log(await getEvolutions(dataPokemonEvolutions.chain));
     let evolutions = await getEvolutions(dataPokemonEvolutions.chain);
+    let url = dataPokemonEvolutions.chain.species.url;
+    const parts = url.split('/');
+    const id = parts[parts.length - 2];
     evolutions = [
         {
+            id: id,
             name: dataPokemonEvolutions.chain.species.name,
             url: dataPokemonEvolutions.chain.species.url,
-            // evolves_to: evolutions,
+            img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`,
         },
     ...evolutions
     ];
-    console.log(evolutions);
-    const evolutionsChainPokemon = document.createElement('div');
-    evolutionsChainPokemon.classList.add('evolutions-pokemon');
-
-    // evolutions.forEach((evolution) => {
-    // });
-
-    // evolutionsChainPokemon.innerHTML = html;
-
 
     /* -------------------------------------------------- HTML -------------------------------------------------- */
-    body.style.overflow = 'hidden';
-
-    const pokemonSheet = document.createElement('div');
-    pokemonSheet.style.overflow = 'auto';
-    pokemonSheet.classList.add('pokemon-sheet');
 
     // Pokemon Types
     let pokemonTypes = ``;
@@ -163,6 +173,7 @@ const displaySheetPokemon = async (pokemon) => {
                 </table>
             </div>
             <img src="${pokemon.image}" />
+            <img src="${pokemon.shiny}" style="display: none;"/>
             <div>
                 <table>
                     ${pokemonStatsHTML}
@@ -172,7 +183,27 @@ const displaySheetPokemon = async (pokemon) => {
     `;
 
     // Evolutions HTML
+    const evolutionsChainPokemon = document.createElement('div');
+    evolutionsChainPokemon.classList.add('evolutions-chain-pokemon');
+    const evolutionChainTitle = document.createElement('h2');
+    evolutionChainTitle.innerText = "Evolution Chain";
+    evolutionsChainPokemon.append(evolutionChainTitle);
 
+    const evolutionsPokemon = document.createElement('div');
+    evolutionsPokemon.classList.add('evolution-pokemon');
+
+    evolutions.forEach((evolution) => {
+        let cardEvolution = document.createElement('div');
+        cardEvolution.classList.add('card');
+        cardEvolution.addEventListener('click', () => displaySheetPokemonEvolution(evolution));
+
+        cardEvolution.innerHTML =  `
+            <img class="card-image" src="${evolution.img}"/>
+            <p class="card-name">${evolution.name}</p>
+        `;
+        evolutionsPokemon.append(cardEvolution);
+    });
+    evolutionsChainPokemon.append(evolutionsPokemon);
 
 
     // Btn close modal
@@ -186,7 +217,29 @@ const displaySheetPokemon = async (pokemon) => {
     });
 
     pokemonSheet.append(hidePokemonSheet, evolutionsChainPokemon);
-    contentPokemon.append(pokemonSheet);
+}
+
+const displaySheetPokemonEvolution = async (evolution) => {
+    const url = `https://pokeapi.co/api/v2/pokemon/${evolution.id}`
+    const promises = [];
+    promises.push(fetchJson(url));
+    Promise.all(promises).then(results => {
+
+        const pokemon = results.map(data => ({
+            id: data.id,
+            name: data.name,
+            image: data.sprites['other']['home']['front_default'] ?? data.sprites['other']['official-artwork']['front_default'],
+            type: data.types,
+            species: data.species.url,
+            height: data.height * 10,
+            weight: data.weight / 10,
+            abilities: data.abilities,
+            stats: data.stats,
+        }))
+
+        displaySheetPokemon(pokemon[0], true);
+    })
+
 }
 
 function formatPokemonId(id) {
@@ -224,10 +277,15 @@ async function getEvolutions(dataPokemonEvolutionsChain) {
 
     const evs = await Promise.all(dataPokemonEvolutionsChain.evolves_to.map(async evolution => {
         const subEvolutions = await getEvolutions(evolution);
+        let url = evolution.species.url;
+        const parts = url.split('/');
+        const id = parts[parts.length - 2];
         return [
           {
+            id: id,
             name: evolution.species.name,
-            url: evolution.species.url
+            url: evolution.species.url,
+            img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`,
           },
           ...subEvolutions
         ];
@@ -235,121 +293,39 @@ async function getEvolutions(dataPokemonEvolutionsChain) {
 
     return evs.flat();
 }
-
+showLoader(true);
 fetchPokemons();
 
 
+function searchPokemon() {
+    let valueSearch = document.getElementById('search-pokemon').value
+    valueSearch = valueSearch.toLowerCase();
+    let namesPokemon = document.querySelectorAll('.card-name');
+    let cardPokemon = document.querySelectorAll(".card");
 
-
-
-
-// A demander a chat gpt 4 :
-
-/* 
-
-J'ai une petite question en javascript / html. Voici mon code JS :
-
-```
-evolutions.forEach((evolution) => {
-    html += '<div class="evolution-pokemon">';
-    html += '<span class="evolution-pokemon-name">' + evolution.name + '</span>';
-    html += '</div>';
-    if (evolution.evolves_to.length > 0) {            
-        html += '<div class="evolution-pokemon">';
-        evolution.evolves_to.forEach((subEvolution) => {
-            if(evolution.evolves_to.length > 1) {
-                html += '<div class="sub-evolution">'
-                html += '<img class="evolution-right-arrow" src="./img/right-arrow.png" />';
-                html += '<span class="evolution-pokemon-name">' + subEvolution.name + '</span>';
-                html += '</div>'
-            } else {
-                html += '<img class="evolution-right-arrow" src="./img/right-arrow.png" />';
-                html += '<span class="evolution-pokemon-name">' + subEvolution.name + '</span>';
-            }
-
-            if(subEvolution.evolves_to.length > 0) {
-                subEvolution.evolves_to.forEach((subEvolution) => {
-                    if(evolution.evolves_to.length > 1) {
-                        html += '<div class="sub-evolution">'
-                        html += '<img class="evolution-right-arrow" src="./img/right-arrow.png" />';
-                        html += '<span class="evolution-pokemon-name">' + subEvolution.name + '</span>';
-                        html += '</div>'
-                    } else {
-                        html += '<img class="evolution-right-arrow" src="./img/right-arrow.png" />';
-                        html += '<span class="evolution-pokemon-name">' + subEvolution.name + '</span>';
-                    }
-                });
-            }
-        });
-        html += '</div>';
-    }
-});
-
-evolutionsChainPokemon.innerHTML = html;
-```
-
-Et voici ce qu'il me renvoie : 
-```
-<div class="evolutions-pokemon">
-    <div class="evolution-pokemon">
-            <span class="evolution-pokemon-name">poliwag</span>
-    </div>
-    <div class="evolution-pokemon">
-        <img class="evolution-right-arrow" src="./img/right-arrow.png">
-        <span class="evolution-pokemon-name">poliwhirl</span>
-        <img class="evolution-right-arrow" src="./img/right-arrow.png">
-        <span class="evolution-pokemon-name">poliwrath</span>
-        <img class="evolution-right-arrow" src="./img/right-arrow.png">
-        <span class="evolution-pokemon-name">politoed</span>
-    </div>
-</div>
-```
-
-Et voici ce que je veux : 
-```
-<div class="evolutions-pokemon">
-    <div class="evolution-pokemon">
-            <span class="evolution-pokemon-name">poliwag</span>
-    </div>
-    <div class="evolution-pokemon">
-        <img class="evolution-right-arrow" src="./img/right-arrow.png">
-        <span class="evolution-pokemon-name">poliwhirl</span>
-    </div>
-    <div class="evolution-pokemon">
-        <div class="sub-evolution">
-            <img class="evolution-right-arrow" src="./img/right-arrow.png">
-            <span class="evolution-pokemon-name">poliwrath</span>
-        </div>
-        <div class="sub-evolution">
-            <img class="evolution-right-arrow" src="./img/right-arrow.png">
-            <span class="evolution-pokemon-name">politoed</span>
-        </div>
-    </div>
-</div>
-```
-
-Je sais ou est le problème mais je ne sais pas comment le résoudre, il s'agit de ce bout de code mal placer : 
-```
-if(subEvolution.evolves_to.length > 0) {
-    subEvolution.evolves_to.forEach((subEvolution) => {
-        if(evolution.evolves_to.length > 1) {
-            html += '<div class="sub-evolution">'
-            html += '<img class="evolution-right-arrow" src="./img/right-arrow.png" />';
-            html += '<span class="evolution-pokemon-name">' + subEvolution.name + '</span>';
-            html += '</div>'
-        } else {
-            html += '<img class="evolution-right-arrow" src="./img/right-arrow.png" />';
-            html += '<span class="evolution-pokemon-name">' + subEvolution.name + '</span>';
+    for (i = 0; i < namesPokemon.length; i++) { 
+        if (!namesPokemon[i].innerHTML.toLowerCase().includes(valueSearch)) {
+            cardPokemon[i].style.display="none";
         }
-    });
+        else {
+            cardPokemon[i].style.display="flex";                 
+        }
+    }
 }
-```
 
-Qui devrait etre a l'extérieur des div ici : 
-```
-if (evolution.evolves_to.length > 0) {            
-    html += '<div class="evolution-pokemon">';
-```
+function showLoader(pokedex = false) {
+    let pokeball = document.createElement('div');
+    pokeball.classList.add('pokeball');
 
-Mais je ne sais pas comment faire vu qu'il faut vérifier sur subEvolution qui est accessible que dans la boucle. Tu peux m'aider a obtenir ce que je veux ? 
-*/
+    pokeball.innerHTML = `
+        <div class="filler animate__animated animate__bounce animate__infinite"></div>
+    `;
+
+    if(pokedex) {
+        contentPokemon.append(pokeball);
+    } else {
+        let pokemonSheet = document.querySelector('.pokemon-sheet');
+        console.log(pokemonSheet);
+        pokemonSheet.append(pokeball);
+    }
+}

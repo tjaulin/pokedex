@@ -1,4 +1,4 @@
-:root, ::before, ::after {
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -10,11 +10,57 @@ body {
     font-family: var(--primary-font-family);
 }
 
+h1 {
+    margin: 20px 0 0 0;
+}
+
 h1, h2 {
     font-family: var(--secondary-font-family);
     text-align: center;
     text-transform: capitalize;
 }
+
+/* .search-pokemon {
+    display: flex;
+    justify-content: center;
+    margin: 3rem 0 0 0;
+} */
+
+.div-search-pokemon {
+    display: flex;
+    justify-content: center;
+    margin: 3rem 0;
+    /* width: 45%; */
+}
+
+#search-pokemon {
+    width: 45%;
+    line-height: 28px;
+    border: 2px solid transparent;
+    border-bottom-color: #777;
+    padding: .2rem 0;
+    outline: none;
+    background-color: transparent;
+    color: #0d0c22;
+    transition: .3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+#search-pokemon:focus, #search-pokemon:hover {
+    outline: none;
+    padding: .2rem 1rem;
+    border-radius: 1rem;
+    border-color: black;
+}
+
+#search-pokemon::placeholder {
+    color: #777;
+}
+
+#search-pokemon:focus::placeholder {
+    opacity: 0;
+    transition: opacity .3s;
+}
+
 
 /* Content pokedex */
 .content-pokedex {
@@ -142,6 +188,10 @@ h2.pokemon-name-fr {
     font-size: 24px;
 }
 
+table.basic-informations {
+    width: 350px;
+}
+
 td.title-table {
     text-align: end;
     padding-right: 10px;
@@ -165,15 +215,20 @@ td.title-table {
 }
 
 /* Evolutions */
-.evolutions-pokemon {
+.evolutions-chain-pokemon {
     display: flex;
+    justify-content: center;
     gap: 10px;
+    flex-direction: column;
 }
 
-.evolution-right-arrow {
-    width: 12px;
+.evolution-pokemon {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 0 5%;
 }
-
 
 
 
@@ -221,24 +276,98 @@ td.title-table {
 .background-color-dark { background: -webkit-linear-gradient(180deg, #707070 50%, #707070 50%);background: -ms-linear-gradient(180deg, #707070 50%, #707070 50%);background: -moz-linear-gradient(180deg, #707070 50%, #707070 50%);background: -o-linear-gradient(180deg, #707070 50%, #707070 50%);background: linear-gradient(180deg, #707070 50%, #707070 50%);background-color: #707070;color: #fff;}
 .background-color-fairy { background: -webkit-linear-gradient(180deg, #fdb9e9 50%, #fdb9e9 50%);background: -ms-linear-gradient(180deg, #fdb9e9 50%, #fdb9e9 50%);background: -moz-linear-gradient(180deg, #fdb9e9 50%, #fdb9e9 50%);background: -o-linear-gradient(180deg, #fdb9e9 50%, #fdb9e9 50%);background: linear-gradient(180deg, #fdb9e9 50%, #fdb9e9 50%);background-color: #fdb9e9;color: #fff;}
 
+/* Loader */  
+.pokeball{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display:flex;
+    justify-content:center;
+    width: 60px;
+    height: 60px;
+}
 
+.pokeball::after{
+    content:'';
+    background:rgba(0,0,0,.2);
+    height: 5px;
+    width:60%;
+    border-radius: 100%;
+    position:absolute;
+    bottom: -2px;
+}
+  
+.filler {
+    position: relative;
+    z-index:2;
+    display:block;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 50% ;
+    overflow: hidden;
+    border: 3px solid;
+}
+  
+.pokeball >span::after, .filler::after{
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    background-color: red;
+    border-bottom: 4px solid;
+    top: -4px;
+}
+  
+.pokeball >span::before, .filler::before{
+    content: '';
+    position: absolute;
+    background-color: #fff;
+    width: 12px;
+    height:12px;
+    border: 4px solid;
+    border-radius: 50%;
+    bottom: 17px;
+    right: 17px;
+    z-index: 1;
+}
+/* .pokeball >span::before{
+    content: '';
+    position: absolute;
+    background-color: #fff;
+    width: 12px;
+    height:12px;
+    border: 4px solid;
+    border-radius: 50%;
+    bottom: 17px;
+    right: 17px;
+    z-index: 1;
+} */
 
 
 
 /* 
 IDEES :
 
-- Ajouter un loader
+- Ajouter un loader - FAIT
+- Ajouter un champ de recherche - FAIT
 - Ajouter un système de filtre (par type, par nom, par génération, etc..)
 - Ajouter la fiche du pokemon
     - Afficher le plus d'informations possibles : 
-        - Le nom en français
+        - Le nom en français - FAIT
         - Version shiny
+        - chaine d'évolution - FAIT
+        - les formes des pokémons
         - ................
 
 
 
 Si j'ai fini vite : 
-- Dark mode
+- Responsivité
+- Navbar
+    - Dark mode
+    - PokeAlea
+    - ................
 
 */
