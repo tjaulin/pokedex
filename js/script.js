@@ -56,6 +56,13 @@ const displayPokemon = (pokemons) => {
         `;
         contentPokemon.append(card);
     })
+    
+    // Types Filter
+    let selectTypePokemon = document.querySelector('#search-type-pokemon');
+    let selectType2Pokemon = document.querySelector('#search-type2-pokemon');
+    selectTypePokemon.addEventListener('change', () => filterPokemon(pokemons));
+    selectType2Pokemon.addEventListener('change', () => filterPokemon(pokemons, true));
+    
 }
 
 const displaySheetPokemon = async (pokemon, evolution = false) => {
@@ -98,6 +105,9 @@ const displaySheetPokemon = async (pokemon, evolution = false) => {
         },
     ...evolutions
     ];
+
+    //Pokemon varieties
+    let dataVarieties = pokemonSpecies.varieties
 
     /* -------------------------------------------------- HTML -------------------------------------------------- */
 
@@ -172,7 +182,7 @@ const displaySheetPokemon = async (pokemon, evolution = false) => {
                     </tr>
                 </table>
             </div>
-            <img src="${pokemon.image}" />
+            <img class="toggle-sprite-pokemon" src="${pokemon.image}" />
             <img src="${pokemon.shiny}" style="display: none;"/>
             <div>
                 <table>
@@ -181,6 +191,21 @@ const displaySheetPokemon = async (pokemon, evolution = false) => {
             </div>
         </div>
     `;
+
+    let toggleSpritePokemon = document.querySelector('.toggle-sprite-pokemon');
+    let toggle = false;
+    console.log('pokemon image :');
+    console.log(pokemon.image);
+    console.log('pokemon shiny :');
+    console.log(pokemon.shiny);
+    toggleSpritePokemon.addEventListener('click', () => {
+        if(toggle) {
+            toggleSpritePokemon.src = pokemon.image;
+        } else {
+            toggleSpritePokemon.src = pokemon.shiny;
+        }
+        toggle = !toggle;
+    });
 
     // Evolutions HTML
     const evolutionsChainPokemon = document.createElement('div');
@@ -205,6 +230,42 @@ const displaySheetPokemon = async (pokemon, evolution = false) => {
     });
     evolutionsChainPokemon.append(evolutionsPokemon);
 
+    //Varieties HTML
+    const divVarietiesPokemon = document.createElement('div');
+    divVarietiesPokemon.classList.add('div-varieties-pokemon');
+    const titleVarietiesPokemon = document.createElement('h2');
+    titleVarietiesPokemon.innerText = "Varieties";
+    divVarietiesPokemon.append(titleVarietiesPokemon);
+
+    const varietiesPokemon = document.createElement('div');
+    varietiesPokemon.classList.add('varieties-pokemon');
+
+    dataVarieties.forEach(async (variety) => {
+        if(!variety.is_default) {
+            let url = variety.pokemon.url;
+            let dataPokemonVariety = await fetchJson(url);
+            let cardVariety = document.createElement('div');
+            cardVariety.classList.add('card');
+            cardVariety.addEventListener('click', () => displaySheetPokemonEvolution(dataPokemonVariety, true));
+            
+            let spritePokemonVariety = dataPokemonVariety.sprites['other']['home']['front_default'] ?? dataPokemonVariety.sprites['other']['official-artwork']['front_default']
+            cardVariety.innerHTML =  `
+                <img class="card-image" src="${spritePokemonVariety}"/>
+                <p class="card-name">${variety.pokemon.name}</p>
+            `;
+            varietiesPokemon.append(cardVariety);
+        }
+    });
+    divVarietiesPokemon.append(varietiesPokemon);
+
+    if(dataVarieties.length <= 1) {
+        varietiesPokemon.innerHTML = `
+        <div class="no-pokemon-varieties">
+            <p>No Varieties found for this Pokemon</p>
+        </div>
+        `;
+    }
+
 
     // Btn close modal
     const hidePokemonSheet = document.createElement('span');
@@ -216,19 +277,20 @@ const displaySheetPokemon = async (pokemon, evolution = false) => {
         body.style.overflow = 'auto';
     });
 
-    pokemonSheet.append(hidePokemonSheet, evolutionsChainPokemon);
+    pokemonSheet.append(hidePokemonSheet, evolutionsChainPokemon, divVarietiesPokemon);
 }
 
-const displaySheetPokemonEvolution = async (evolution) => {
-    const url = `https://pokeapi.co/api/v2/pokemon/${evolution.id}`
+const displaySheetPokemonEvolution = async (pokemon) => {
     const promises = [];
+    const url = `https://pokeapi.co/api/v2/pokemon/${pokemon.id}`
     promises.push(fetchJson(url));
     Promise.all(promises).then(results => {
 
-        const pokemon = results.map(data => ({
+        const pokemonData = results.map(data => ({
             id: data.id,
             name: data.name,
             image: data.sprites['other']['home']['front_default'] ?? data.sprites['other']['official-artwork']['front_default'],
+            shiny: data.sprites['other']['home']['front_shiny'] ?? data.sprites['other']['official-artwork']['front_shiny'],
             type: data.types,
             species: data.species.url,
             height: data.height * 10,
@@ -237,7 +299,7 @@ const displaySheetPokemonEvolution = async (evolution) => {
             stats: data.stats,
         }))
 
-        displaySheetPokemon(pokemon[0], true);
+        displaySheetPokemon(pokemonData[0], true);
     })
 
 }
@@ -280,12 +342,19 @@ async function getEvolutions(dataPokemonEvolutionsChain) {
         let url = evolution.species.url;
         const parts = url.split('/');
         const id = parts[parts.length - 2];
+
+        let imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`
+        let resultImgExists = await imgExists(imgUrl);
+        if(!resultImgExists) {
+            imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+        }
+
         return [
           {
             id: id,
             name: evolution.species.name,
             url: evolution.species.url,
-            img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`,
+            img: imgUrl,
           },
           ...subEvolutions
         ];
@@ -301,14 +370,14 @@ function searchPokemon() {
     let valueSearch = document.getElementById('search-pokemon').value
     valueSearch = valueSearch.toLowerCase();
     let namesPokemon = document.querySelectorAll('.card-name');
-    let cardPokemon = document.querySelectorAll(".card");
+    let cardsPokemon = document.querySelectorAll(".card");
 
     for (i = 0; i < namesPokemon.length; i++) { 
         if (!namesPokemon[i].innerHTML.toLowerCase().includes(valueSearch)) {
-            cardPokemon[i].style.display="none";
+            cardsPokemon[i].style.display="none";
         }
         else {
-            cardPokemon[i].style.display="flex";                 
+            cardsPokemon[i].style.display="flex";                 
         }
     }
 }
@@ -327,5 +396,55 @@ function showLoader(pokedex = false) {
         let pokemonSheet = document.querySelector('.pokemon-sheet');
         console.log(pokemonSheet);
         pokemonSheet.append(pokeball);
+    }
+}
+
+async function imgExists(url) {
+    try {
+        const response = await fetch(url);
+        return response.ok;
+    } catch (error) {
+        return error;
+    }
+}
+
+
+function filterPokemon(pokemons) {
+    let selectTypePokemon = document.querySelector('#search-type-pokemon');
+    let selectType2Pokemon = document.querySelector('#search-type2-pokemon');
+    let cardsPokemon = document.querySelectorAll(".card");
+    if(selectTypePokemon.value != 'none') {
+        selectType2Pokemon.disabled = false;
+    } else {
+        selectType2Pokemon.value = 'disabled';
+        selectType2Pokemon.disabled = true;
+    }
+    if(!selectType2Pokemon.disabled && selectType2Pokemon.value != "disabled" && selectType2Pokemon.value != "none") {
+        pokemons.forEach((pokemon, i) => {
+            let type1 = pokemon.type[0].type.name;
+            let type2 = pokemon.type[1] ? pokemon.type[1].type.name : null;
+    
+            let firstTypeMatch = selectTypePokemon.value == 'none' || type1 == selectTypePokemon.value || type2 == selectTypePokemon.value;
+            let secondTypeMatch = selectType2Pokemon.value == 'none' || type1 == selectType2Pokemon.value || type2 == selectType2Pokemon.value;
+    
+            if (firstTypeMatch && secondTypeMatch) {
+                cardsPokemon[i].style.display = "flex";
+            } else {
+                cardsPokemon[i].style.display = "none";
+            }
+        });
+    } else {
+        pokemons.forEach((pokemon, i) => {
+            let type1 = pokemon.type[0].type.name;
+            let type2 = pokemon.type[1] ? pokemon.type[1].type.name : null;
+            let firstTypeMatch = selectTypePokemon.value == 'none' || type1 == selectTypePokemon.value;
+            let secondTypeMatch = selectTypePokemon.value == 'none' || type2 == selectTypePokemon.value;
+            
+            if (firstTypeMatch || secondTypeMatch) {
+                cardsPokemon[i].style.display = "flex";
+            } else {
+                cardsPokemon[i].style.display = "none";
+            }
+        });
     }
 }

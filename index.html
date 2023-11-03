@@ -22,7 +22,51 @@
     <h1>Pokédex</h1>
     <!-- <div class="search-pokemon"> -->
         <div class="div-search-pokemon">
-            <input type="text" onkeyup="searchPokemon()" id="search-pokemon" name="search-pokemon" placeholder="Rechercher un pokemon…" autocomplete="off" aria-label="Rechercher un pokemon parmi le contenu du site">
+            <input type="text" onkeyup="searchPokemon()" id="search-pokemon" name="search-pokemon" placeholder="Search pokemon…" autocomplete="off" aria-label="Rechercher un pokemon parmi le contenu du site">
+            <select name="search-type-pokemon" id="search-type-pokemon">
+                <option selected disabled>Select first type..</option>
+                <option value="none">None</option>
+                <option value="normal">Normal</option>
+                <option value="fighting">Fighting</option>
+                <option value="flying">Flying</option>
+                <option value="poison">Poison</option>
+                <option value="ground">Ground</option>
+                <option value="rock">Rock</option>
+                <option value="bug">Bug</option>
+                <option value="ghost">Ghost</option>
+                <option value="steel">Steel</option>
+                <option value="fire">Fire</option>
+                <option value="water">Water</option>
+                <option value="grass">Grass</option>
+                <option value="electric">Electric</option>
+                <option value="psychic">Psychic</option>
+                <option value="ice">Ice</option>
+                <option value="dragon">Dragon</option>
+                <option value="dark">Dark</option>
+                <option value="fairy">Fairy</option>
+            </select>
+            <select name="search-type2-pokemon" id="search-type2-pokemon" disabled>
+                <option value="disabled" selected disabled>Select second type..</option>
+                <option value="none">None</option>
+                <option value="normal">Normal</option>
+                <option value="fighting">Fighting</option>
+                <option value="flying">Flying</option>
+                <option value="poison">Poison</option>
+                <option value="ground">Ground</option>
+                <option value="rock">Rock</option>
+                <option value="bug">Bug</option>
+                <option value="ghost">Ghost</option>
+                <option value="steel">Steel</option>
+                <option value="fire">Fire</option>
+                <option value="water">Water</option>
+                <option value="grass">Grass</option>
+                <option value="electric">Electric</option>
+                <option value="psychic">Psychic</option>
+                <option value="ice">Ice</option>
+                <option value="dragon">Dragon</option>
+                <option value="dark">Dark</option>
+                <option value="fairy">Fairy</option>
+            </select>
         </div>
     <!-- </div> -->
     <div class="content-pokedex"></div>

@@ -30,10 +30,11 @@ h1, h2 {
     display: flex;
     justify-content: center;
     margin: 3rem 0;
+    gap: 20px;
     /* width: 45%; */
 }
 
-#search-pokemon {
+#search-pokemon, #search-type-pokemon, #search-type2-pokemon {
     width: 45%;
     line-height: 28px;
     border: 2px solid transparent;
@@ -45,11 +46,29 @@ h1, h2 {
     transition: .3s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
-#search-pokemon:focus, #search-pokemon:hover {
+#search-type-pokemon, #search-type2-pokemon {
+    width: 150px;
+    cursor: pointer;
+}
+
+#search-pokemon:focus, #search-pokemon:hover, #search-type-pokemon:hover, #search-type-pokemon:focus, #search-type2-pokemon:hover, #search-type2-pokemon:focus {
     outline: none;
     padding: .2rem 1rem;
     border-radius: 1rem;
     border-color: black;
+}
+
+#search-type2-pokemon:disabled {
+    color: #9d9d9d;
+    border-bottom-color: #9d9d9d;
+    cursor: default;
+}
+
+#search-type2-pokemon:disabled:hover, #search-type2-pokemon:disabled:focus {
+    padding: 0;
+    border-radius: 0;
+    border-color: transparent;
+    border-bottom-color: #9d9d9d;
 }
 
 #search-pokemon::placeholder {
@@ -60,7 +79,6 @@ h1, h2 {
     opacity: 0;
     transition: opacity .3s;
 }
-
 
 /* Content pokedex */
 .content-pokedex {
@@ -198,6 +216,10 @@ td.title-table {
     font-weight: bold;
 }
 
+.toggle-sprite-pokemon {
+    cursor: pointer;
+}
+
 .pokemon-abilities {
     display: flex;
     flex-wrap: wrap;
@@ -214,21 +236,36 @@ td.title-table {
     width: fit-content;
 }
 
-/* Evolutions */
-.evolutions-chain-pokemon {
+/* Evolutions & Varieties */
+.evolutions-chain-pokemon, .div-varieties-pokemon {
     display: flex;
     justify-content: center;
     gap: 10px;
     flex-direction: column;
+    margin: 50px 0;
 }
 
-.evolution-pokemon {
+.evolution-pokemon, .varieties-pokemon {
     display: flex;
     justify-content: center;
     gap: 10px;
     flex-wrap: wrap;
     margin: 0 5%;
 }
+
+.no-pokemon-varieties {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 150px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+
+
+
 
 
 
@@ -356,9 +393,13 @@ IDEES :
 - Ajouter la fiche du pokemon
     - Afficher le plus d'informations possibles : 
         - Le nom en français - FAIT
-        - Version shiny
-        - chaine d'évolution - FAIT
-        - les formes des pokémons
+        - Version shiny - FAIT
+        - chaine d'évolution - FAIT - Corriger les images des évolutions (férosinge) - FAIT
+        - les variétés des pokémons - FAIT
+        - Quelques infos en plus (base hapiness, capture rate, generation, habitat, etc..)
+        - Au clic du nom du pokémon, afficher un modal avec toutes les descriptions de tout les jeux
+        - Mettre un petit badge "légendaire" lorsque le pokémon est un légendaire
+        - Rajouter la couleur des pokémons
         - ................
 
 
@@ -369,5 +410,7 @@ Si j'ai fini vite :
     - Dark mode
     - PokeAlea
     - ................
+- Fiche pokémon
+    - Faire un système de pagination
 
 */
