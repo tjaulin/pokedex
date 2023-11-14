@@ -28,6 +28,8 @@ const fetchPokemons = () => {
             weight: data.weight / 10,
             abilities: data.abilities,
             stats: data.stats,
+            base_experience: data.base_experience,
+            held_items: data.held_items,
         }))
         displayPokemon(pokemons)
     })
@@ -109,6 +111,19 @@ const displaySheetPokemon = async (pokemon, evolution = false) => {
     //Pokemon varieties
     let dataVarieties = pokemonSpecies.varieties
 
+    //EV Yield
+    let EVYieldStats = [];
+    let pokemonStats = pokemon.stats;
+    pokemonStats.forEach((stat) => {
+        if(stat.effort != 0) {
+            EVYieldStats.push(stat);
+        }
+    });
+
+    //Pokemon held items
+    let heldItems = pokemon.held_items;
+    //Pokemon egg groups
+    let eggGroups = pokemonSpecies.egg_groups;
     /* -------------------------------------------------- HTML -------------------------------------------------- */
 
     // Pokemon Types
@@ -129,7 +144,6 @@ const displaySheetPokemon = async (pokemon, evolution = false) => {
     });
 
     // Pokemon Stats
-    let pokemonStats = pokemon.stats;
     let pokemonStatsHTML = ``;
     pokemonStats.forEach((stat) => {
         pokemonStatsHTML += `
@@ -149,48 +163,78 @@ const displaySheetPokemon = async (pokemon, evolution = false) => {
         }
     });
 
+    //genera
+    let generaPokemon = pokemonSpecies.genera;
+    let htmlGeneraPokemon = ``;
+    generaPokemon.forEach((genera) => {
+        if(genera.language.name == "en") {
+            htmlGeneraPokemon = genera.genus;
+        }
+    });
+
     // All contents to html
-    pokemonSheet.innerHTML = `
-        <h1 class="pokemon-name">${pokemon.name}</h1>
-        <h2 class="pokemon-name-fr">${pokemonNameFr}</h2>
-        <div class="pokemon-basic-information">
-            <div>
-                <table class="basic-informations">
-                    <tr>
-                        <td class="title-table">ID</td>
-                        <td>${formatPokemonId(pokemon.id)}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-table">Name</td>
-                        <td>${pokemon.name}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-table">Type</td>
-                        <td class="pokemon-types">${pokemonTypes}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-table">Height</td>
-                        <td>${pokemon.height} cm</td>
-                    </tr>
-                    <tr>
-                        <td class="title-table">Weight</td>
-                        <td>${pokemon.weight} kg</td>
-                    </tr>
-                    <tr>
-                        <td class="title-table">Abilities</td>
-                        <td class="pokemon-abilities">${pokemonAbilitiesHTML}</td>
-                    </tr>
-                </table>
-            </div>
-            <img class="toggle-sprite-pokemon" src="${pokemon.image}" />
-            <img src="${pokemon.shiny}" style="display: none;"/>
-            <div>
-                <table>
-                    ${pokemonStatsHTML}
-                </table>
-            </div>
+    let pokemonName = document.createElement("h1");
+    pokemonName.classList.add('pokemon-name');
+    pokemonName.innerText = pokemon.name;
+
+    let pokemonNameFR = document.createElement("h2");
+    pokemonNameFR.classList.add('pokemon-name-fr');
+    pokemonNameFR.innerText = pokemonNameFr;
+
+
+    let generaPokemonParagraph = document.createElement("p");
+    generaPokemonParagraph.classList.add('genera-pokemon');
+
+    let badgeGeneraPokemon = document.createElement("span");
+    badgeGeneraPokemon.classList.add('badge-genera-pokemon');
+    badgeGeneraPokemon.addEventListener('click', () => showDescriptions(pokemon.name, pokemonSheet, pokemonSpecies.flavor_text_entries));
+    badgeGeneraPokemon.innerText = htmlGeneraPokemon;
+    generaPokemonParagraph.append(badgeGeneraPokemon);
+
+    let pokemonBasicInformation = document.createElement("div");
+    pokemonBasicInformation.classList.add('pokemon-basic-information');
+    pokemonBasicInformation.innerHTML = `
+        <div>
+            <table class="basic-informations">
+                <tr>
+                    <td class="title-table">ID</td>
+                    <td>${formatPokemonId(pokemon.id)}</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Name</td>
+                    <td>${pokemon.name}</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Type</td>
+                    <td class="pokemon-types">${pokemonTypes}</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Height</td>
+                    <td>${pokemon.height} cm</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Weight</td>
+                    <td>${pokemon.weight} kg</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Abilities</td>
+                    <td class="pokemon-abilities">${pokemonAbilitiesHTML}</td>
+                </tr>
+            </table>
+        </div>
+        <img class="toggle-sprite-pokemon" src="${pokemon.image}" />
+        <img src="${pokemon.shiny}" style="display: none;"/>
+        <div>
+            <table>
+                ${pokemonStatsHTML}
+            </table>
         </div>
     `;
+
+    //Hide loader
+    pokemonSheet.innerHTML = ``;
+
+    pokemonSheet.append(pokemonName, pokemonNameFR, generaPokemonParagraph, pokemonBasicInformation);
 
     let toggleSpritePokemon = document.querySelector('.toggle-sprite-pokemon');
     let toggle = false;
@@ -266,6 +310,100 @@ const displaySheetPokemon = async (pokemon, evolution = false) => {
         `;
     }
 
+    let htmlEVYieldStats = ``;
+    EVYieldStats.forEach((stat) => {
+        htmlEVYieldStats += `<span>${stat.effort} </span><span>${capitalize(stat.stat.name)} </span>`;
+    });
+    
+    let htmlHeldItems = ``;
+    if(heldItems.length == 0) {
+        htmlHeldItems = `None`;
+    } else {
+        heldItems.forEach((item) => {
+            htmlHeldItems += `<span>${capitalize(item.item.name)} </span>`;
+        });
+    }
+    
+    let htmlEggGroups = ``;
+    if(eggGroups.length == 0) {
+        htmlEggGroups = `None`;
+    } else {
+        eggGroups.forEach((eggGroup) => {
+            htmlEggGroups += `<span>${capitalize(eggGroup.name)} </span>`;
+        });
+    }
+
+    let htmlGenderRate = ``;
+    if(pokemonSpecies.gender_rate == -1) {
+        htmlGenderRate = `None`;
+    } else {
+        htmlGenderRate = `<span>${100-((pokemonSpecies.gender_rate/8)*100)}% <i class="fa-solid fa-mars"></i></span> - <span class="female-rate">${(pokemonSpecies.gender_rate/8)*100 }% <i class="fa-solid fa-venus"></i></span>`;
+    }
+    
+
+    let divAdvancedInformation = document.createElement('div');
+    divAdvancedInformation.classList.add('pokemon-advanced-information');
+    divAdvancedInformation.innerHTML = `
+        <div class="pokemon-forms">
+            <h2>Forms</h2>
+            <table class="forms-information">
+                <tr>
+                    <td class="title-table">Alternative Form</td>
+                    <td>${pokemonSpecies.forms_switchable ? 'Yes' : 'No'}</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Gender Difference</td>
+                    <td>${pokemonSpecies.has_gender_differences ? 'Yes' : 'No'}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="pokemon-trainings">
+            <h2>Trainings</h2>
+            <table class="training-information">
+                <tr>
+                    <td class="title-table">EV Yield</td>
+                    <td>${htmlEVYieldStats}</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Catch Rate</td>
+                    <td>${pokemonSpecies.capture_rate}</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Base Friendship</td>
+                    <td>${pokemonSpecies.base_happiness}</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Base Exp</td>
+                    <td>${pokemon.base_experience}</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Growth Rate</td>
+                    <td>${capitalize(pokemonSpecies.growth_rate.name)}</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Held Items</td>
+                    <td>${htmlHeldItems}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="pokemon-breedings">
+            <h2>Breedings</h2>
+            <table class="training-information">
+                <tr>
+                    <td class="title-table">Egg Groups</td>
+                    <td>${htmlEggGroups}</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Gender Distribution</td>
+                    <td>${htmlGenderRate}</td>
+                </tr>
+                <tr>
+                    <td class="title-table">Egg Cycles</td>
+                    <td>${pokemonSpecies.hatch_counter} (${(1+pokemonSpecies.hatch_counter)*255} <i class="fa-solid fa-shoe-prints"></i>)</td>
+                </tr>
+            </table>
+        </div>
+    `;
 
     // Btn close modal
     const hidePokemonSheet = document.createElement('span');
@@ -277,7 +415,7 @@ const displaySheetPokemon = async (pokemon, evolution = false) => {
         body.style.overflow = 'auto';
     });
 
-    pokemonSheet.append(hidePokemonSheet, evolutionsChainPokemon, divVarietiesPokemon);
+    pokemonSheet.append(hidePokemonSheet, evolutionsChainPokemon, divVarietiesPokemon, divAdvancedInformation);
 }
 
 const displaySheetPokemonEvolution = async (pokemon) => {
@@ -297,6 +435,8 @@ const displaySheetPokemonEvolution = async (pokemon) => {
             weight: data.weight / 10,
             abilities: data.abilities,
             stats: data.stats,
+            base_experience: data.base_experience,
+            held_items: data.held_items,
         }))
 
         displaySheetPokemon(pokemonData[0], true);
@@ -447,4 +587,43 @@ function filterPokemon(pokemons) {
             }
         });
     }
+}
+
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function showDescriptions(pokemonName, pokemonSheet, flavorTextEntries) {
+    pokemonSheet.style.overflow = "hidden";
+    const modal = document.createElement('div');
+    modal.classList.add('modal-descriptions');
+
+    const modalContent = document.createElement('div');
+    modalContent.classList.add('modal-content-descriptions');
+    modalContent.innerHTML = `
+        <h2>${pokemonName}</h2>
+        <p class="pokedex-entries">Pokédex Entries</p>
+        <hr>
+        <span class="close-modal-descriptions" onclick="closeModal()">&times;</span>
+    `;
+
+    flavorTextEntries.forEach((textEntry) => {
+        if(textEntry.language.name == 'en' ) {
+            modalContent.innerHTML += `
+                <div class="pokemon-description">
+                    <h3>${capitalize(textEntry.version.name)}</h3>
+                    <p>${textEntry.flavor_text}</p>
+                </div>
+            `;
+        }
+    });
+    modal.append(modalContent);
+    pokemonSheet.append(modal);
+}
+
+function closeModal() {
+    const modal = document.querySelector('.modal-descriptions');
+    let pokemonSheet = document.querySelector('.pokemon-sheet');
+    pokemonSheet.style.overflow = 'auto';
+    modal.remove();
 }

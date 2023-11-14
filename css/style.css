@@ -20,6 +20,10 @@ h1, h2 {
     text-transform: capitalize;
 }
 
+hr {
+    margin: 20px 0;
+}
+
 /* .search-pokemon {
     display: flex;
     justify-content: center;
@@ -192,6 +196,21 @@ h2.pokemon-name-fr {
     font-size: 16px;
 }
 
+.genera-pokemon {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.badge-genera-pokemon {
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    background-color: #0d0c22;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+}
+
 .pokemon-basic-information {
     display: flex;
     justify-content: space-evenly;
@@ -235,6 +254,20 @@ td.title-table {
 .pokemon-abilities span {
     width: fit-content;
 }
+
+.pokemon-advanced-information {
+    display: flex;
+    justify-content: center;
+    gap: 10%;
+}
+
+.pokemon-advanced-information h2 {
+    margin-bottom: 10px;
+}
+
+.pokemon-forms, .pokemon-trainings, .pokemon-breedings {
+    line-height: 200%;
+} 
 
 /* Evolutions & Varieties */
 .evolutions-chain-pokemon, .div-varieties-pokemon {
@@ -312,6 +345,55 @@ td.title-table {
 .background-color-dragon { background: -webkit-linear-gradient(180deg, #53a4cf 50%, #f16e57 50%);background: -ms-linear-gradient(180deg, #53a4cf 50%, #f16e57 50%);background: -moz-linear-gradient(180deg, #53a4cf 50%, #f16e57 50%);background: -o-linear-gradient(180deg, #53a4cf 50%, #f16e57 50%);background: linear-gradient(180deg, #53a4cf 50%, #f16e57 50%);background-color: #53a4cf;color: #fff;}
 .background-color-dark { background: -webkit-linear-gradient(180deg, #707070 50%, #707070 50%);background: -ms-linear-gradient(180deg, #707070 50%, #707070 50%);background: -moz-linear-gradient(180deg, #707070 50%, #707070 50%);background: -o-linear-gradient(180deg, #707070 50%, #707070 50%);background: linear-gradient(180deg, #707070 50%, #707070 50%);background-color: #707070;color: #fff;}
 .background-color-fairy { background: -webkit-linear-gradient(180deg, #fdb9e9 50%, #fdb9e9 50%);background: -ms-linear-gradient(180deg, #fdb9e9 50%, #fdb9e9 50%);background: -moz-linear-gradient(180deg, #fdb9e9 50%, #fdb9e9 50%);background: -o-linear-gradient(180deg, #fdb9e9 50%, #fdb9e9 50%);background: linear-gradient(180deg, #fdb9e9 50%, #fdb9e9 50%);background-color: #fdb9e9;color: #fff;}
+
+
+/* Modal descriptions pokemon */
+
+.modal-descriptions {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content-descriptions {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    max-height: 90vh;
+    width: 100%;
+    text-align: center;
+    overflow: auto;
+}
+
+.pokemon-description {
+    margin: 10px 0;
+}
+
+.pokedex-entries {
+    margin-top: 5px;
+}
+
+.close-modal-descriptions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.close-modal-descriptions:hover {
+    color: #ccc;
+}
+
 
 /* Loader */  
 .pokeball{
@@ -396,8 +478,8 @@ IDEES :
         - Version shiny - FAIT
         - chaine d'évolution - FAIT - Corriger les images des évolutions (férosinge) - FAIT
         - les variétés des pokémons - FAIT
-        - Quelques infos en plus (base hapiness, capture rate, generation, habitat, etc..)
-        - Au clic du nom du pokémon, afficher un modal avec toutes les descriptions de tout les jeux
+        - Quelques infos en plus (base hapiness, capture rate, generation, habitat, etc..) - FAIT
+        - Au clic du nom du pokémon, afficher un modal avec toutes les descriptions de tout les jeux - FAIT
         - Mettre un petit badge "légendaire" lorsque le pokémon est un légendaire
         - Rajouter la couleur des pokémons
         - ................
