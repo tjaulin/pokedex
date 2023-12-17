@@ -408,7 +408,7 @@ const displaySheetPokemon = async (pokemon, evolution = false) => {
     // Btn close modal
     const hidePokemonSheet = document.createElement('span');
     hidePokemonSheet.classList.add('close-pokemon-sheet');
-    hidePokemonSheet.innerText = `Retour`;
+    hidePokemonSheet.innerText = `Back`;
 
     hidePokemonSheet.addEventListener('click', () => {
         pokemonSheet.remove();
